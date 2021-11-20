@@ -6,7 +6,7 @@
 /*   By: lwaymar <lwaymar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/05 12:30:00 by maksimelist       #+#    #+#             */
-/*   Updated: 2021/11/20 15:36:55 by lwaymar          ###   ########.fr       */
+/*   Updated: 2021/11/20 18:10:13 by lwaymar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,19 +85,31 @@ char	*ft_strdup(const char *src)
 	return (cpy);
 }
 
-char    *ft_check_ostatok(char **ostatok, char **line) // проверка наличия отстатка и вхождения в него '\n'
+
+char *ft_strjoin_and_free_oldline_buf(char **line, char buf)
 {
+    char    *tmp;
+
+    tmp = ft_strjoin(*line, buf);
+    free(*line);
+    
+    return(tmp);
+}
+
+char    *ft_check_ostatok(char **ostatok, char **line) 
+{
+
     *line = (ft_calloc(1, 1));
     if (*ostatok)
     {
         while(**ostatok != '\n' && **ostatok != '\0')
         {
-            *line = ft_strjoin(*line, **ostatok);
+            *line = ft_strjoin_and_free_oldline_buf(line, **ostatok);
             (*ostatok)++;
         }
-        *line = ft_strjoin(*line, **ostatok); // добавляем к концу \n
+        *line = ft_strjoin_and_free_oldline_buf(line, **ostatok);
         (*ostatok)++;
-        *ostatok = ft_strdup(*ostatok); // остаток  до '/0' добавляем в остаток
+        *ostatok = ft_strdup(*ostatok);
         if (**ostatok == '\0')
             *ostatok = NULL;
         return(*ostatok);
@@ -112,9 +124,10 @@ char *get_next_line(int fd)
     static int      byte_was_read = 1;
     static char     *ostatok;
     char            *line;
+    char            *temp;
     int             i = 0;
 
-    if (byte_was_read < 1 || BUFFER_SIZE <= 0 || fd < 0)
+    if (fd < 0 || byte_was_read < 1 || BUFFER_SIZE <= 0)
         return(0);
     ft_check_ostatok(&ostatok, &line);
     while (!ostatok && byte_was_read)
@@ -123,8 +136,8 @@ char *get_next_line(int fd)
         buf[byte_was_read] = '\0';
         i = 0;
         while(buf[i] != '\n' && buf[i] != '\0')
-            line = ft_strjoin(line, buf[i++]);  
-        line = ft_strjoin(line, buf[i]);
+            line = ft_strjoin_and_free_oldline_buf(&line, buf[i++]);  
+        line = ft_strjoin_and_free_oldline_buf(&line, buf[i]);
         if (buf[i] != '\0')
             ostatok = ft_strdup(&buf[++i]); 
     }

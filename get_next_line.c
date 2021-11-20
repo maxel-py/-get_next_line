@@ -150,7 +150,7 @@ char *get_next_line(int fd)
     char            *line;
     int             i = 0;
 
-    if (byte_was_read < 1 || BUFFER_SIZE <= 0 || fd < 0)
+    if (BUFFER_SIZE <= 0 || fd < 0 || byte_was_read < 1)
         return(0);
     ft_check_ostatok(&ostatok, &line);
     while (!ostatok && byte_was_read)

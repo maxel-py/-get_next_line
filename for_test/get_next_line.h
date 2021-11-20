@@ -6,7 +6,7 @@
 /*   By: lwaymar <lwaymar@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/05 12:06:45 by maksimelist       #+#    #+#             */
-/*   Updated: 2021/11/20 15:26:22 by lwaymar          ###   ########.fr       */
+/*   Updated: 2021/11/20 16:03:04 by lwaymar          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,9 @@
 void        *ft_calloc(size_t count, size_t size);
 size_t      ft_strlen(const char *s);
 char        *ft_strjoin(char const *s1, char const s2);
+char        *ft_strjoin_and_free_oldline_buf(char **line, char buf);
 char        *ft_strdup(const char *src);
-char        *ft_check_ostatok(char *ostatok, char *line);
+char        *ft_check_ostatok(char **ostatok, char **line);
 char        *get_next_line(int fd);
 
 #endif
