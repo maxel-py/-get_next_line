@@ -6,7 +6,7 @@
 /*   By: maksimelistratov <maksimelistratov@stud    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/05 12:30:00 by maksimelist       #+#    #+#             */
-/*   Updated: 2021/11/21 21:53:49 by maksimelist      ###   ########.fr       */
+/*   Updated: 2021/11/22 17:56:15 by maksimelist      ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,6 @@ char	*ft_strdup(const char *src)
 
 
 char *ft_create_line(char *s1, char s2)
-
 {
     int     i;
     int     j;
@@ -155,7 +154,9 @@ char *get_next_line(int fd)
             line = ft_create_line(line, buf[i++]);  
         line = ft_create_line(line, buf[i]);
         if (buf[i] != '\0')
-            ostatok = ft_strdup(&buf[++i]); 
+            ostatok = ft_strdup(&buf[++i]);
+        else
+            line = ((void*)0);  
     }
     free(buf);
     return(line);

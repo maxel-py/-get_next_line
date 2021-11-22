@@ -98,29 +98,48 @@ char		*ft_strcpy(char *dest, const char *src)
 	return (dest);
 }
 
-char *ft_strjoin_and_free_oldline_buf(char *line, char buf)
-{
-    char    *temp;
 
-    temp = ft_strjoin(line, buf);
-    free(line);  
-    return (temp);
+char *ft_create_line(char *s1, char s2)
+{
+    int     i;
+    int     j;
+    char    *str;
+
+    i = 0;
+    j = 0;
+    if (!(str = (char *)malloc(sizeof(char) * (ft_strlen(s1) + 1 + ft_strlen(&s2)))))
+        return (NULL);
+    else
+    {
+        while (s1[i])
+        {
+            str[i] = s1[i];
+            i++;
+        }
+        str[i] = s2;
+        i++;
+        str[i] = '\0';
+    }
+    free(s1);
+    return (str);
 }
+
 
 void   ft_check_ostatok(char **ostatok, char **line) // проверка наличия отстатка и вхождения в него '\n'
 {
+
     *line = (ft_calloc(1, 1));
-    
     if (*ostatok)
     {
-        while (**ostatok != '\n' && **ostatok != '\0')
+        while(**ostatok != '\n' && **ostatok != '\0')
         {
-            *line = ft_strjoin_and_free_oldline_buf(*line, **ostatok);
+            *line = ft_create_line(*line, **ostatok);
             (*ostatok)++;
         }
-        *line = ft_strjoin_and_free_oldline_buf(*line, **ostatok); // добавляем к концу \n
+        *line = ft_create_line(*line, **ostatok); // добавляем к концу \n
         (*ostatok)++;
         *ostatok = ft_strdup(*ostatok); // остаток  до '/0' добавляем в остаток
+        //free
         if (**ostatok == '\0')
             *ostatok = NULL;
     }
@@ -128,14 +147,17 @@ void   ft_check_ostatok(char **ostatok, char **line) // проверка нал�
 
 char *get_next_line(int fd)
 {
-    int             BUFFER_SIZE = 42;
-    char            buf[BUFFER_SIZE + 1];
+    int             BUFFER_SIZE = 1;
+    char            *buf;
     static int      byte_was_read = 1;
     static char     *ostatok;
     char            *line;
-    int             i = 0;
+    int             i;
 
-    if (BUFFER_SIZE <= 0 || fd < 1 || byte_was_read < 1)
+    if (fd < 0 || byte_was_read < 1 || BUFFER_SIZE <= 0)
+        return(0);
+    buf = (char *)malloc(sizeof(char) * BUFFER_SIZE + 1);
+    if (!buf)
         return (0);
     ft_check_ostatok(&ostatok, &line);
     while (!ostatok && byte_was_read)
@@ -143,29 +165,31 @@ char *get_next_line(int fd)
         byte_was_read = read(fd, buf, BUFFER_SIZE);
         buf[byte_was_read] = '\0';
         i = 0;
-        while (buf[i] != '\n' && buf[i] != '\0')
-            line = ft_strjoin_and_free_oldline_buf(line, buf[i++]);  
-        line = ft_strjoin_and_free_oldline_buf(line, buf[i]);
+        while(buf[i] != '\n' && buf[i] != '\0')
+            line = ft_create_line(line, buf[i++]);  
+        line = ft_create_line(line, buf[i]);
         if (buf[i] != '\0')
             ostatok = ft_strdup(&buf[++i]); 
     }
-    return (line);
+    //free(ostatok);
+    free(buf);
+    return(line);
 }
 
 
 int main()
 {
     int		fd;
-    char    *line = NULL;
+    //char    *line = NULL;
 
     fd = open("./test.txt", O_RDONLY);
-    while((line = get_next_line(fd)))
-    {
-       printf("%s",line); 
-       free(line);
-    }
-    // printf("%s",get_next_line(fd));
-    // printf("%s",get_next_line(fd));
+    // while((line = get_next_line(fd)))
+    // {
+    //    printf("%s",line); 
+    //    free(line);
+    // }
+    printf("%s",get_next_line(fd));
+    //printf("%s",get_next_line(fd));
     // printf("%s",get_next_line(fd));
     // printf("%s",get_next_line(fd));
     // printf("%s",get_next_line(fd));
@@ -173,9 +197,3 @@ int main()
     // printf("%s",get_next_line(fd));
     return(0);
 }
-
-/*
-buf = malloc(BUFFER_SIZE * sizeof(char));
-if (!pointer)
-		return (NULL);
-*/
