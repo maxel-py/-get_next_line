@@ -1,26 +1,5 @@
 {
-    "version": "2.0.0",
     "tasks": [
-        {
-            "type": "cppbuild",
-            "label": "C/C++: clang сборка активного файла",
-            "command": "/usr/bin/clang",
-            "args": [
-                "-fdiagnostics-color=always",
-                "-g",
-                "${file}",
-                "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
-            ],
-            "options": {
-                "cwd": "${fileDirname}"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": "build",
-            "detail": "компилятор: /usr/bin/clang"
-        },
         {
             "type": "cppbuild",
             "label": "C/C++: gcc сборка активного файла",
@@ -44,5 +23,6 @@
             },
             "detail": "Задача создана отладчиком."
         }
-    ]
+    ],
+    "version": "2.0.0"
 }

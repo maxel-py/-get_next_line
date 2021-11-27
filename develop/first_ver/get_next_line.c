@@ -1,9 +1,16 @@
-#include<sys/types.h>
-#include<sys/stat.h>
-#include<fcntl.h>
-#include<stdio.h>
-#include<unistd.h>
-#include<stdlib.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: maksimelistratov <maksimelistratov@stud    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/11/05 12:30:00 by maksimelist       #+#    #+#             */
+/*   Updated: 2021/11/24 10:41:37 by maksimelist      ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "get_next_line.h"
 
 
 void *ft_calloc(size_t count, size_t size)
@@ -19,13 +26,6 @@ void *ft_calloc(size_t count, size_t size)
     while(i<*(int *)pointer)
         *(pointer+i) = 0;
     return((void *)pointer); 
-}
-
-void	ft_strclr(char *s)
-{
-	if (s)
-		while (*s)
-			*s++ = '\0';
 }
 
 size_t      ft_strlen(const char *s)
@@ -66,6 +66,7 @@ char    *ft_strjoin(char const *s1, char const s2)
     return (str);
 }
 
+
 char	*ft_strdup(const char *src)
 {
 	int		i;
@@ -75,6 +76,7 @@ char	*ft_strdup(const char *src)
 	cpy = (char *)malloc(sizeof(char) * ft_strlen(src) + 1);
 	if (!(src) || !(cpy))
 		return (NULL);
+
 	while (src[i])
 	{
 		cpy[i] = src[i];
@@ -82,20 +84,6 @@ char	*ft_strdup(const char *src)
 	}
 	cpy[i] = '\0';
 	return (cpy);
-}
-
-char		*ft_strcpy(char *dest, const char *src)
-{
-	int i;
-
-	i = 0;
-	while (src[i] != '\0')
-		{
-			dest[i] = src[i];
-			i++;
-		}
-	dest[i] = src[i];
-	return (dest);
 }
 
 
@@ -108,7 +96,10 @@ char *ft_create_line(char *s1, char s2)
     i = 0;
     j = 0;
     if (!(str = (char *)malloc(sizeof(char) * (ft_strlen(s1) + 1 + ft_strlen(&s2)))))
+    {
+        //free(s1); // новый
         return (NULL);
+    }
     else
     {
         while (s1[i])
@@ -126,7 +117,7 @@ char *ft_create_line(char *s1, char s2)
 
 
 void   ft_check_ostatok(char **ostatok, char **line) // проверка наличия отстатка и вхождения в него '\n'
-{
+{   
 
     *line = (ft_calloc(1, 1));
     if (*ostatok)
@@ -139,7 +130,6 @@ void   ft_check_ostatok(char **ostatok, char **line) // проверка нал�
         *line = ft_create_line(*line, **ostatok); // добавляем к концу \n
         (*ostatok)++;
         *ostatok = ft_strdup(*ostatok); // остаток  до '/0' добавляем в остаток
-        //free
         if (**ostatok == '\0')
             *ostatok = NULL;
     }
@@ -147,18 +137,22 @@ void   ft_check_ostatok(char **ostatok, char **line) // проверка нал�
 
 char *get_next_line(int fd)
 {
-    int             BUFFER_SIZE = 1;
-    char            *buf;
+    char            *buf = NULL;
     static int      byte_was_read = 1;
     static char     *ostatok;
-    char            *line;
+    char            *line = NULL;
     int             i;
 
     if (fd < 0 || byte_was_read < 1 || BUFFER_SIZE <= 0)
-        return(0);
-    buf = (char *)malloc(sizeof(char) * BUFFER_SIZE + 1);
-    if (!buf)
+    {
         return (0);
+    }
+    if (!buf)
+	{
+		buf = (char *)ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+		if (!buf)
+			return (NULL);
+	}
     ft_check_ostatok(&ostatok, &line);
     while (!ostatok && byte_was_read)
     { 
@@ -169,31 +163,9 @@ char *get_next_line(int fd)
             line = ft_create_line(line, buf[i++]);  
         line = ft_create_line(line, buf[i]);
         if (buf[i] != '\0')
-            ostatok = ft_strdup(&buf[++i]); 
+            ostatok = ft_strdup(&buf[++i]);
     }
-    //free(ostatok);
-    free(buf);
+    free (ostatok);
+    free (buf);
     return(line);
-}
-
-
-int main()
-{
-    int		fd;
-    //char    *line = NULL;
-
-    fd = open("./test.txt", O_RDONLY);
-    // while((line = get_next_line(fd)))
-    // {
-    //    printf("%s",line); 
-    //    free(line);
-    // }
-    printf("%s",get_next_line(fd));
-    //printf("%s",get_next_line(fd));
-    // printf("%s",get_next_line(fd));
-    // printf("%s",get_next_line(fd));
-    // printf("%s",get_next_line(fd));
-    // printf("%s",get_next_line(fd));
-    // printf("%s",get_next_line(fd));
-    return(0);
 }
